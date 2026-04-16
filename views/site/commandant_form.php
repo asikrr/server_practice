@@ -4,6 +4,7 @@
         <h2>Добавление коменданта</h2>
         <div class="container">
             <form method="post" class="form">
+                <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
                 <div class="form-fields">
                     <div class="form-field">
                         <label for="full_name">ФИО</label>
