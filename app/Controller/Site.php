@@ -12,25 +12,7 @@ class Site
 {
     public function index(Request $request): string
     {
-        if ($request->id) {
-            $posts = Post::where('id', $request->id)->get();
-        } else {
-            $posts = Post::all();
-        }
-        return (new View())->render('site.post', ['posts' => $posts]);
-    }
-
-    public function hello(): string
-    {
-        return new View('site.hello', ['message' => 'hello working']);
-    }
-
-    public function signup(Request $request): string
-    {
-        if ($request->method === 'POST' && User::create($request->all())) {
-            app()->route->redirect('/go');
-        }
-        return new View('site.signup');
+        return (new View())->render('site.index');
     }
 
     public function login(Request $request): string
@@ -40,7 +22,7 @@ class Site
         }
 
         if (Auth::attempt($request->all())) {
-            app()->route->redirect('/hello');
+            app()->route->redirect('/');
         }
 
         return new View('site.login', ['message' => 'Неправильные логин или пароль']);
@@ -49,6 +31,75 @@ class Site
     public function logout(): void
     {
         Auth::logout();
-        app()->route->redirect('/hello');
+        app()->route->redirect('/login');
     }
+
+    public function commandants(Request $request): string
+    {
+        return (new View())->render('site.commandants');
+    }
+
+    public function commandant_form(Request $request): string
+    {
+        return (new View())->render('site.commandant_form');
+    }
+
+    public function debtors(Request $request): string
+    {
+        return (new View())->render('site.debtors');
+    }
+
+    public function dormitories(Request $request): string
+    {
+        return (new View())->render('site.dormitories');
+    }
+
+    public function dormitory_form(Request $request): string
+    {
+        return (new View())->render('site.dormitory_form');
+    }
+
+    public function residents(Request $request): string
+    {
+        return (new View())->render('site.residents');
+    }
+
+    public function resident_form(Request $request): string
+    {
+        return (new View())->render('site.resident_form');
+    }
+
+    public function rooms(Request $request): string
+    {
+        return (new View())->render('site.rooms');
+    }
+
+    public function room_form(Request $request): string
+    {
+        return (new View())->render('site.room_form');
+    }
+
+    // public function index(Request $request): string
+    // {
+    //     if ($request->id) {
+    //         $posts = Post::where('id', $request->id)->get();
+    //     } else {
+    //         $posts = Post::all();
+    //     }
+    //     return (new View())->render('site.post', ['posts' => $posts]);
+    // }
+
+    // public function hello(): string
+    // {
+    //     return new View('site.hello', ['message' => 'hello working']);
+    // }
+
+    // public function signup(Request $request): string
+    // {
+    //     if ($request->method === 'POST' && User::create($request->all())) {
+    //         app()->route->redirect('/go');
+    //     }
+    //     return new View('site.signup');
+    // }
+
 }
