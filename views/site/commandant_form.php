@@ -1,5 +1,6 @@
 <section class="commandant-form">
     <div class="wrapper">
+        <h3><?= $message ?? ''; ?></h3>
         <h2>Добавление коменданта</h2>
         <div class="container">
             <form method="post" class="form">

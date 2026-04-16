@@ -7,6 +7,7 @@ use Model\User;
 use Src\View;
 use Src\Request;
 use Src\Auth\Auth;
+use Src\Validator\Validator;
 
 class Site
 {
@@ -43,9 +44,23 @@ class Site
     public function commandant_form(Request $request): string
     {
         if ($request->method === 'POST') {
-            $data = $request->all();      
-            $data['role_id'] = 2;        
-            User::create($data); 
+            $validator = new Validator($request->all(), [
+                'login' => ['required', 'unique:users,login'],
+                'full_name' => ['required'],
+                'password' => ['required']
+            ], [
+                'required' => 'Поле :field пусто',
+                'unique' => 'Поле :field должно быть уникально'
+            ]);
+
+            if($validator->fails()){
+                return new View('site.commandant_form',
+                    ['message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)]);
+            }
+
+            $data = $request->all();
+            $data['role_id'] = 2;
+            User::create($data);
             app()->route->redirect('/commandants');
         }
         return (new View())->render('site.commandant_form');
@@ -103,10 +118,26 @@ class Site
 
     // public function signup(Request $request): string
     // {
-    //     if ($request->method === 'POST' && User::create($request->all())) {
-    //         app()->route->redirect('/go');
+    //     if ($request->method === 'POST') {
+
+    //         $validator = new Validator($request->all(), [
+    //             'name' => ['required'],
+    //             'login' => ['required', 'unique:users,login'],
+    //             'password' => ['required']
+    //         ], [
+    //             'required' => 'Поле :field пусто',
+    //             'unique' => 'Поле :field должно быть уникально'
+    //         ]);
+
+    //         if($validator->fails()){
+    //             return new View('site.signup',
+    //                 ['message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE)]);
+    //         }
+
+    //         if (User::create($request->all())) {
+    //             app()->route->redirect('/login');
+    //         }
     //     }
     //     return new View('site.signup');
     // }
-
 }
