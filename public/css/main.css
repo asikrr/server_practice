@@ -155,3 +155,18 @@ select {
     flex-direction: column;
     gap: 15px;
 }
+
+.controls,
+.controls form,
+.controls .form-field {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.controls button {
+    background-color: transparent;
+    padding: 0;
+    text-decoration: underline;
+}

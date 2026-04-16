@@ -6,7 +6,7 @@
                 <div class="form-fields">
                     <div class="form-field">
                         <label for="room-number">Номер</label>
-                        <input type="text" name="room-number" id="room-number">
+                        <input type="text" name="room_number" id="room-number">
                     </div>
                     <div class="form-field">
                         <label for="floor">Этаж</label>
@@ -19,13 +19,8 @@
                 </div>
                 <div class="form-fields">
                     <div class="form-field">
-                        <label for="dorm-select">Общежитие</label>
-                        <select id="dorm-select">
-                        </select>
-                    </div>
-                    <div class="form-field">
                         <label for="room-type">Тип</label>
-                        <select id="room-type">
+                        <select id="room-type" name="room-type">
                         </select>
                     </div>
                 </div>

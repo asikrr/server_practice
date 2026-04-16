@@ -6,7 +6,7 @@
                 <div class="form-fields">
                     <div class="form-field">
                         <label for="dorm-num">Номер</label>
-                        <input type="text" name="dorm-num" id="dorm-num">
+                        <input type="text" name="dormitory_number" id="dorm-num">
                     </div>
                     <div class="form-field">
                         <label for="city">Город</label>
