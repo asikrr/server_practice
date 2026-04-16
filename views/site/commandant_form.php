@@ -5,8 +5,8 @@
             <form method="post" class="form">
                 <div class="form-fields">
                     <div class="form-field">
-                        <label for="full-name">ФИО</label>
-                        <input type="text" name="full-name" id="full-name">
+                        <label for="full_name">ФИО</label>
+                        <input type="text" name="full_name" id="full-name">
                     </div>
                     <div class="form-field">
                         <label for="login">Логин</label>

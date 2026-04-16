@@ -36,11 +36,18 @@ class Site
 
     public function commandants(Request $request): string
     {
-        return (new View())->render('site.commandants');
+        $commandants = User::where('role_id', 2)->get();
+        return (new View())->render('site.commandants', ['commandants' => $commandants]);
     }
 
     public function commandant_form(Request $request): string
     {
+        if ($request->method === 'POST') {
+            $data = $request->all();      
+            $data['role_id'] = 2;        
+            User::create($data); 
+            app()->route->redirect('/commandants');
+        }
         return (new View())->render('site.commandant_form');
     }
 

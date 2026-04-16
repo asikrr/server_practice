@@ -8,12 +8,22 @@
             <div class="table">
                 <div class="table-column">
                     <p class="bold-text">ФИО</p>
+                    <?php
+                    foreach ($commandants as $c) {
+                        echo '<p>' . $c->full_name . '</p>';
+                    }
+                    ?>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Общежитие</p>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Логин</p>
+                    <?php
+                    foreach ($commandants as $c) {
+                        echo '<p>' . $c->login . '</p>';
+                    }
+                    ?>
                 </div>
             </div>
         </div>

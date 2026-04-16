@@ -10,11 +10,14 @@ class User extends Model implements IdentityInterface
 {
     use HasFactory;
 
+    protected $primaryKey = 'user_id';
+
     public $timestamps = false;
     protected $fillable = [
-        'name',
+        'full_name',
         'login',
-        'password'
+        'password',
+        'role_id'
     ];
 
     protected static function booted()
@@ -27,12 +30,12 @@ class User extends Model implements IdentityInterface
 
     public function findIdentity(int $id)
     {
-        return self::where('id', $id)->first();
+        return self::where('user_id', $id)->first();
     }
 
     public function getId(): int
     {
-        return $this->id;
+        return $this->user_id;
     }
 
     public function attemptIdentity(array $credentials)
