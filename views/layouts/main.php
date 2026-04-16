@@ -1,4 +1,7 @@
-<?php $paths = require __DIR__ . '/../../config/path.php'; ?>
+<?php 
+$paths = require __DIR__ . '/../../config/path.php';
+use Src\Session;
+ ?>
 <!doctype html>
 <html lang="ru">
 <head>
@@ -14,23 +17,23 @@
     <div class="wrapper">
         <h1><a href="<?= app()->route->getUrl('/') ?>">Управление общежитием</a></h1>
         <nav>
-            <?php
-            if (!app()->auth::check()):
-                ?>
+            <?php if (!app()->auth::check()): ?>
                 <a href="<?= app()->route->getUrl('/login') ?>">Вход</a>
-                <?php
-            else:
-                ?>
+            <?php else: ?>
                 <a href="<?= app()->route->getUrl('/') ?>">Главная</a>
-                <a href="<?= app()->route->getUrl('/dormitories') ?>">Общежития</a>
-                <a href="<?= app()->route->getUrl('/commandants') ?>">Коменданты</a>
-                <a href="<?= app()->route->getUrl('/residents') ?>">Жильцы</a>
+                <?php if (Session::get('role_id') == 1): ?>
+                    <a href="<?= app()->route->getUrl('/dormitories') ?>">Общежития</a>
+                    <a href="<?= app()->route->getUrl('/commandants') ?>">Коменданты</a>
+                <?php endif; ?>
+
+                <?php if (Session::get('role_id') == 2): ?>
+                    <a href="<?= app()->route->getUrl('/residents') ?>">Жильцы</a>
+                    <a href="<?= app()->route->getUrl('/debtors') ?>">Должники</a>
+                <?php endif; ?>
+
                 <a href="<?= app()->route->getUrl('/rooms') ?>">Комнаты</a>
-                <a href="<?= app()->route->getUrl('/debtors') ?>">Должники</a>
                 <a href="<?= app()->route->getUrl('/logout') ?>" class="danger-text">Выйти</a>
-            <?php
-            endif;
-            ?>
+            <?php endif; ?>
         </nav>
     </div>
 </header>

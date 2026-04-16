@@ -20,6 +20,7 @@ class Auth
     {
         self::$user = $user;
         Session::set('id', self::$user->getId());
+        Session::set('role_id', $user->role_id);
     }
 
     public static function attempt(array $credentials): bool
@@ -48,6 +49,7 @@ class Auth
     public static function logout(): bool
     {
         Session::clear('id');
+        Session::clear('role_id');
         return true;
     }
 
