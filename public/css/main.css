@@ -165,7 +165,8 @@ select {
     gap: 20px;
 }
 
-.controls button {
+.controls button,
+button.underline-text.danger-text {
     background-color: transparent;
     padding: 0;
     text-decoration: underline;
