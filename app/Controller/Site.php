@@ -510,7 +510,7 @@ class Site
             $query->whereHas('dormitory', fn($q) => $q->where('user_id', $user->getId()));
         }
 
-        if ($request->type_filter !== '') {
+        if ($request->type_filter !== null && $request->type_filter !== '') {
             $query->where('type_id', $request->type_filter);
         }
 
