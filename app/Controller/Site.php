@@ -165,7 +165,25 @@ class Site
 
     public function debtors(Request $request): string
     {
-        return (new View())->render('site.debtors');
+        $activeResidents = Resident::active()
+        ->with(['residences' => fn($q) => $q->whereNull('actual_date_of_departure')->with(['room', 'payment'])])->get();
+
+        $debtors = [];
+        foreach ($activeResidents as $resident) {
+            $residence = $resident->residences->first();
+            if ($residence && !$residence->payment) {
+                $debtors[] = [
+                    'resident' => $resident,
+                    'room_number' => $residence->room->room_number,
+                    'debt' => $residence->residence_price
+                ];
+            }
+        }
+
+        return (new View())->render('site.debtors', [
+            'debtors' => $debtors,
+            'request' => $request
+        ]);
     }
 
     public function dormitories(Request $request): string
@@ -394,7 +412,6 @@ class Site
                 'passport' => ['required'],
                 'status_id' => ['required'],
                 'residence_order_num' => ['required'],
-                'date_of_entry' => ['required'],
                 'date_of_departure' => ['required']
             ], ['required' => 'Поле :field обязательно']);
 

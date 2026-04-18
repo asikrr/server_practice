@@ -13,7 +13,7 @@
             </form>
             <form method="get">
                 <div class="form-field">
-                    <input type="text" name="search" placeholder="Поиск по ФИО/комнате">
+                    <input type="text" name="search" placeholder="Поиск по ФИО">
                     <button type="submit">Найти</button>
                 </div>
             </form>
@@ -58,6 +58,13 @@
                     <?php foreach ($residents ?? [] as $r): ?>
                         <?php $cur = $r->get_current_residence(); ?>
                         <p><?= $cur ? $cur->residence_order_num : '—' ?></p>
+                    <?php endforeach; ?>
+                </div>
+                <div class="table-column">
+                    <p class="bold-text">Проживание</p>
+                    <?php foreach ($residents ?? [] as $r): ?>
+                        <?php $cur = $r->get_current_residence(); ?>
+                        <p><?= $cur ? $cur->date_of_entry . ' - ' . $cur->date_of_departure : '—' ?></p>
                     <?php endforeach; ?>
                 </div>
                 <div class="table-column">
