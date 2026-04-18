@@ -314,6 +314,8 @@ class Site
     {
         $user_id = app()->auth->user()->getId();
         $search = $request->search ?? '';
+        $sort   = $request->get('residents-sort', 'alphabet_asc');
+        $sort_dir = ($sort === 'alphabet_desc') ? 'desc' : 'asc';
         $room_ids = Room::whereHas('dormitory', fn($q) => $q->where('user_id', $user_id))->pluck('room_id');
 
         $query = Resident::active()
@@ -331,11 +333,14 @@ class Site
             });
         }
 
+        $query->orderBy('last_name', $sort_dir)->orderBy('first_name', $sort_dir);
+
         $residents = $query->get();
 
         return (new View())->render('site.residents', [
             'residents' => $residents,
-            'search' => $search 
+            'search' => $search,
+            'sort' => $sort
         ]);
     }
 

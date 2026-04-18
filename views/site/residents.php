@@ -5,20 +5,14 @@
             <form method="get">
                 <div class="form-field">
                     <select name="residents-sort">
-                        <option value="alphabet_asc">По алфавиту (А-Я)</option>
-                        <option value="alphabet_desc">По алфавиту (Я-А)</option>
+                        <option value="alphabet_asc" <?= ($sort ?? 'alphabet_asc') == 'alphabet_asc' ? 'selected' : '' ?>>По алфавиту (А-Я)</option>
+                        <option value="alphabet_desc" <?= ($sort ?? 'alphabet_asc') == 'alphabet_desc' ? 'selected' : '' ?>>По алфавиту (Я-А)</option>
                     </select>
                 </div>
-                <button>Применить</button>
-            </form>
-            <form method="get">
                 <div class="form-field">
-                    <input type="text" 
-                        name="search" 
-                        value="<?= $search ?? ''?>" 
-                        placeholder="Поиск по ФИО">
-                    <button type="submit">Найти</button>
+                    <input type="text" name="search" value="<?= $search ?? '' ?>" placeholder="Поиск по ФИО">
                 </div>
+                <button type="submit">Применить</button>
             </form>
         </div>
         <div class="container">
