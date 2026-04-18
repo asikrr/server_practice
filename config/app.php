@@ -9,7 +9,13 @@ return [
     ],
     'validators' => [
         'required' => \Validators\RequireValidator::class,
-        'unique' => \Validators\UniqueValidator::class
+        'unique' => \Validators\UniqueValidator::class,
+        'is_numeric' => Validators\NumericValidator::class,
+        'min_number'  => Validators\MinNumberValidator::class,
+        'max_file_size' => Validators\MaxFileSizeValidator::class,
+        'date' => Validators\DateValidator::class,
+        'unique_room' => Validators\UniqueRoomValidator::class,
+        'passport' => Validators\PassportValidator::class
     ],
     'routeAppMiddleware' => [
         'csrf' => \Middlewares\CSRFMiddleware::class,

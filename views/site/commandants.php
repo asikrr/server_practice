@@ -40,7 +40,7 @@
                 <div class="table-column">
                     <p class="bold-text">Удаление</p>
                     <?php foreach ($commandants ?? [] as $c): ?>
-                        <?php if (!in_array($c->user_id, $busyIds)): ?>
+                        <?php if (!in_array($c->user_id, $busy_ids)): ?>
                             <form method="POST" action="<?= app()->route->getUrl('/commandant_delete/' . $c->user_id) ?>">
                                 <input type="hidden" name="csrf_token" value="<?= app()->auth::generateCSRF() ?>">
                                 <button class="underline-text danger-text">Удалить</button>
