@@ -13,7 +13,10 @@
             </form>
             <form method="get">
                 <div class="form-field">
-                    <input type="text" name="search" placeholder="Поиск по ФИО">
+                    <input type="text" 
+                        name="search" 
+                        value="<?= $search ?? ''?>" 
+                        placeholder="Поиск по ФИО">
                     <button type="submit">Найти</button>
                 </div>
             </form>

@@ -313,17 +313,29 @@ class Site
     public function residents(Request $request): string
     {
         $user_id = app()->auth->user()->getId();
+        $search = $request->search ?? '';
         $room_ids = Room::whereHas('dormitory', fn($q) => $q->where('user_id', $user_id))->pluck('room_id');
 
-        $residents = Resident::active()
+        $query = Resident::active()
             ->whereHas('residences', fn($q) => $q->whereIn('room_id', $room_ids))
             ->with([
                 'gender', 
                 'status', 
-                'residences' => fn($q) => $q->whereNull('actual_date_of_departure')->with(['room.dormitory', 'payment'])])->get();
+                'residences' => fn($q) => $q->whereNull('actual_date_of_departure')->with(['room', 'payment'])]);
+
+        if ($search !== '') {
+            $query->where(function($q) use ($search) {
+                $q->where('last_name', 'like', "%{$search}%")
+                ->orWhere('first_name', 'like', "%{$search}%")
+                ->orWhere('patronymic', 'like', "%{$search}%");
+            });
+        }
+
+        $residents = $query->get();
 
         return (new View())->render('site.residents', [
-            'residents' => $residents
+            'residents' => $residents,
+            'search' => $search 
         ]);
     }
 

@@ -4,9 +4,7 @@
         <h3><?= app()->auth->user()->name ?? ''; ?></h3>
         
         <h2>Вход</h2>
-        <?php
-        if (!app()->auth::check()):
-            ?>
+        <?php if (!app()->auth::check()): ?>
         <div class="container">
             <form method="post" class="auth-form">
                 <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
