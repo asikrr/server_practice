@@ -45,6 +45,8 @@
                                 <input type="hidden" name="csrf_token" value="<?= app()->auth::generateCSRF() ?>">
                                 <button class="underline-text danger-text">Удалить</button>
                             </form>
+                        <?php else: ?>
+                            <p>-</p>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </div>

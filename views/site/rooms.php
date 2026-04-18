@@ -66,31 +66,41 @@
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Количество жильцов</p>
-                    <?php foreach ($rooms ?? [] as $room): ?>
-                        <p><?= $room->get_current_residents_count() ?></p>
+                    <?php foreach ($rooms ?? [] as $r): ?>
+                        <p><?= $r->get_current_residents_count() ?></p>
                     <?php endforeach; ?>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Заселение</p>
-                    <?php foreach ($rooms ?? [] as $room): ?>
-                        <?php if ($room->get_current_residents_count() < $room->capacity): ?>
-                        <a href="<?= app()->route->getUrl('/resident_create/' . $room->room_id) ?>" class="underline-text">Заселить</a>
+                    <?php foreach ($rooms ?? [] as $r): ?>
+                        <?php if ($r->get_current_residents_count() < $r->capacity): ?>
+                            <a href="<?= app()->route->getUrl('/resident_create/' . $r->room_id) ?>" class="underline-text">Заселить</a>
+                        <?php else: ?>
+                            <p><i>Заполнена</i></p>
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Редактирование</p>
                     <?php foreach ($rooms ?? [] as $r): ?>
-                        <a href="<?= app()->route->getUrl('/room_update/' . $r->room_id) ?>" class="underline-text">Редактировать</a>
+                        <?php if ($r->get_current_residents_count() == 0): ?>
+                            <a href="<?= app()->route->getUrl('/room_update/' . $r->room_id) ?>" class="underline-text">Редактировать</a>
+                        <?php else: ?>
+                            <p>-</p>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Удаление</p>
                     <?php foreach ($rooms ?? [] as $r): ?>
-                        <form method="POST" action="<?= app()->route->getUrl('/room_delete/' . $r->room_id) ?>">
-                            <input type="hidden" name="csrf_token" value="<?= app()->auth::generateCSRF() ?>">
-                            <button class="underline-text danger-text">Удалить</button>
-                        </form>
+                        <?php if ($r->get_current_residents_count() == 0): ?>
+                            <form method="POST" action="<?= app()->route->getUrl('/room_delete/' . $r->room_id) ?>">
+                                <input type="hidden" name="csrf_token" value="<?= app()->auth::generateCSRF() ?>">
+                                <button class="underline-text danger-text">Удалить</button>
+                            </form>
+                        <?php else: ?>
+                            <p>-</p>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
             </div>

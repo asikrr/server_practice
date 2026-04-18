@@ -214,7 +214,7 @@ class Site
         return (new View())->render('site.dormitories', [
             'dormitories' => $dormitories,
             'commandants' => $commandants,
-            'busyIds' => $busy_ids
+            'busy_ids' => $busy_ids
         ]);
     }
 
@@ -537,8 +537,12 @@ class Site
 
     public function room_update(int $id, Request $request): string
     {
-        $room = Room::where('room_id', $id)->first();
-        if (!$room) app()->route->redirect('/dormitories');
+        $room = Room::find($id);
+        if (!$room) app()->route->redirect('/rooms');
+
+        if ($room->get_current_residents_count() > 0) {
+            app()->route->redirect('/rooms');
+        }
 
         $types = RoomType::all();
         if ($request->method === 'POST') {
@@ -577,6 +581,13 @@ class Site
 
     public function room_delete(int $id, Request $request): string
     {
+        $room = Room::find($id);
+        if (!$room) app()->route->redirect('/rooms');
+
+        if ($room->get_current_residents_count() > 0) {
+            app()->route->redirect('/rooms');
+        }
+        
         Room::where('room_id', $id)->delete();
         app()->route->redirect('/rooms');
     }
