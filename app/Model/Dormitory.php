@@ -7,6 +7,7 @@ class Dormitory extends Model
 {
     public $timestamps = false;
     protected $primaryKey = 'dormitory_id';
+    protected $table = 'dormitories';
     
     protected $fillable = [
         'dormitory_number',

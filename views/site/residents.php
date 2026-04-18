@@ -47,7 +47,7 @@
                 <div class="table-column">
                     <p class="bold-text">Комната</p>
                     <?php foreach ($residents ?? [] as $r): ?>
-                        <?php $cur = $r->getCurrentResidence(); ?>
+                        <?php $cur = $r->get_current_residence(); ?>
                         <p>
                             <?= $cur ? $cur->room->room_number ?? '?' : '—' ?>
                         </p>
@@ -56,14 +56,14 @@
                 <div class="table-column">
                     <p class="bold-text">Приказ</p>
                     <?php foreach ($residents ?? [] as $r): ?>
-                        <?php $cur = $r->getCurrentResidence(); ?>
+                        <?php $cur = $r->get_current_residence(); ?>
                         <p><?= $cur ? $cur->residence_order_num : '—' ?></p>
                     <?php endforeach; ?>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Квитанция</p>
                     <?php foreach ($residents ?? [] as $r): ?>
-                        <?php $cur = $r->getCurrentResidence(); ?>
+                        <?php $cur = $r->get_current_residence(); ?>
                         <p>
                             <?php if ($cur && $cur->payment && $cur->payment->receipt_file): ?>
                                 <a href="<?= $cur->payment->receipt_file ?>" target="_blank" class="underline-text">Скачать</a>
@@ -77,6 +77,18 @@
                     <p class="bold-text">Редактирование</p>
                     <?php foreach ($residents ?? [] as $r): ?>
                         <a href="<?= app()->route->getUrl('/resident_update/' . $r->resident_id) ?>" class="underline-text">Редактировать</a>
+                    <?php endforeach; ?>
+                </div>
+                <div class="table-column">
+                    <p class="bold-text">Выселение</p>
+                    <?php foreach ($residents as $r): ?>
+                        <?php if ($r->get_current_residence()): ?>
+                            <form method="POST" 
+                                action="<?= app()->route->getUrl('/resident_checkout/' . $r->resident_id) ?>">
+                                <input type="hidden" name="csrf_token" value="<?= app()->auth::generateCSRF() ?>">
+                                <button type="submit" class="underline-text danger-text">Выселить</button>
+                            </form>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
             </div>

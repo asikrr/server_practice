@@ -67,13 +67,15 @@
                 <div class="table-column">
                     <p class="bold-text">Количество жильцов</p>
                     <?php foreach ($rooms ?? [] as $room): ?>
-                        <p><?= $room->residences()->whereNull('actual_date_of_departure')->count() ?></p>
+                        <p><?= $room->get_current_residents_count() ?></p>
                     <?php endforeach; ?>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Заселение</p>
                     <?php foreach ($rooms ?? [] as $room): ?>
+                        <?php if ($room->get_current_residents_count() < $room->capacity): ?>
                         <a href="<?= app()->route->getUrl('/resident_create/' . $room->room_id) ?>" class="underline-text">Заселить</a>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
                 <div class="table-column">

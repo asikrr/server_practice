@@ -8,6 +8,7 @@ class Residence extends Model
 {
     public $timestamps = false;
     protected $primaryKey = 'residence_id';
+    protected $table = 'residences';
 
     protected $fillable = [
         'resident_id',

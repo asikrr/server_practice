@@ -33,8 +33,15 @@ class Resident extends Model
         return $this->belongsTo(Gender::class, 'gender_id', 'gender_id');
     }
 
-    public function getCurrentResidence()
+    public function get_current_residence()
     {
         return $this->residences()->whereNull('actual_date_of_departure')->first();
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->whereHas('residences', function ($q) {
+            $q->whereNull('actual_date_of_departure');
+        });
     }
 }

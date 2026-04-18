@@ -275,7 +275,7 @@ class Site
 
     public function residents(Request $request): string
     {
-        $residents = Resident::with([
+        $residents = Resident::active()->with([
             'gender', 
             'status', 
             'residences.room.dormitory', 
@@ -314,7 +314,7 @@ class Site
             }
 
             $existing = Resident::where('passport', $request->passport)->first();
-            if ($existing && $existing->getCurrentResidence()) {
+            if ($existing && $existing->get_current_residence()) {
                 return (new View())->render('site.resident_form', [
                     'message' => json_encode(['passport' => ['Человек с таким паспортом уже проживает в общежитии']], JSON_UNESCAPED_UNICODE),
                     'resident' => null, 'residence' => null, 'room_id' => $room_id,
@@ -347,7 +347,7 @@ class Site
                 $departureDate
             );
 
-            $this->createPayment($residence->residence_id, $receiptPath);
+            $this->create_payment($residence->residence_id, $receiptPath);
 
             app()->route->redirect('/rooms');
         }
@@ -358,12 +358,31 @@ class Site
         ]);
     }
 
+    public function resident_checkout(int $id, Request $request): string
+    {
+        $resident = Resident::find($id);
+        if (!$resident) {
+            app()->route->redirect('/residents');
+        }
+
+        $residence = $resident->get_current_residence();
+        if (!$residence) {
+            app()->route->redirect('/residents');
+        }
+
+        $residence->update([
+            'actual_date_of_departure' => date('Y-m-d')
+        ]);
+
+        app()->route->redirect('/residents');
+    }
+
     public function resident_update(int $id, Request $request): string
     {
         $resident = Resident::where('resident_id', $id)->first();
         if (!$resident) app()->route->redirect('/residents');
 
-        $residence = $resident->getCurrentResidence();
+        $residence = $resident->get_current_residence();
         $genders = Gender::all();
         $statuses = ResidentStatus::all();
 

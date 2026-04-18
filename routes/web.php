@@ -21,6 +21,7 @@ Route::add('POST', '/dormitory_delete/{id}', [Controller\Site::class, 'dormitory
 Route::add('GET', '/residents', [Controller\Site::class, 'residents'])->middleware('auth', 'commandant');
 Route::add(['GET', 'POST'], '/resident_create/{room_id}', [Controller\Site::class, 'resident_create'])->middleware('auth', 'commandant');
 Route::add(['GET', 'POST'], '/resident_update/{id}', [Controller\Site::class, 'resident_update'])->middleware('auth', 'commandant');
+Route::add('POST', '/resident_checkout/{id}', [Controller\Site::class, 'resident_checkout'])->middleware('auth', 'commandant');
 
 Route::add('GET', '/rooms', [Controller\Site::class, 'rooms'])->middleware('auth');
 Route::add(['GET', 'POST'], '/room_create/{dormitory_id}', [Controller\Site::class, 'room_create'])->middleware('auth', 'admin');
