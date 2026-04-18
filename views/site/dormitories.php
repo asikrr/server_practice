@@ -62,7 +62,7 @@
                 <div class="table-column">
                     <p class="bold-text">Удаление</p>
                     <?php foreach ($dormitories ?? [] as $d): ?>
-                        <?php if (!in_array($d->dormitory_id, $busyIds)): ?>
+                        <?php if (!in_array($d->dormitory_id, $busy_ids)): ?>
                             <form method="POST" action="<?= app()->route->getUrl('/dormitory_delete/' . $d->dormitory_id) ?>">
                                 <input type="hidden" name="csrf_token" value="<?= app()->auth::generateCSRF() ?>">
                                 <button class="underline-text danger-text">Удалить</button>

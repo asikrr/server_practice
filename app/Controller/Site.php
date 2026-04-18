@@ -21,7 +21,26 @@ class Site
 {
     public function index(Request $request): string
     {
-        return (new View())->render('site.index');
+        $user = app()->auth->user();
+        $role_id = $user->role_id; 
+        
+        $data = [
+            'user_name' => $user->full_name,
+            'role_id'   => $role_id
+        ];
+
+        if ($role_id == 1) {
+            $data['dormitories_count'] = Dormitory::count();
+            $data['commandants_count'] = User::where('role_id', 2)->count();
+        } 
+
+        elseif ($role_id == 2) {
+            $dormitory = Dormitory::where('user_id', $user->user_id)->first();
+            $data['dormitory'] = $dormitory;
+            $data['rooms_count'] = $dormitory ? Room::where('dormitory_id', $dormitory->dormitory_id)->count() : 0;
+        }
+
+        return (new View())->render('site.index', $data);
     }
 
     public function login(Request $request): string
@@ -190,12 +209,12 @@ class Site
     {
         $dormitories = Dormitory::all();
         $commandants = User::where('role_id', 2)->get();
-        $busyIds = Room::whereIn('dormitory_id', $dormitories->pluck('dormitory_id'))->pluck('dormitory_id')->unique()->toArray();
+        $busy_ids = Room::whereIn('dormitory_id', $dormitories->pluck('dormitory_id'))->pluck('dormitory_id')->unique()->toArray();
 
         return (new View())->render('site.dormitories', [
             'dormitories' => $dormitories,
             'commandants' => $commandants,
-            'busyIds'     => $busyIds
+            'busyIds' => $busy_ids
         ]);
     }
 
