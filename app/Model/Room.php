@@ -27,6 +27,11 @@ class Room extends Model
         return $this->hasMany(Residence::class, 'room_id', 'room_id');
     }
 
+    public function type() 
+    {
+        return $this->belongsTo(RoomType::class, 'type_id', 'type_id');
+    }
+
     public function get_current_residents_count(): int
     {
         return $this->residences()->whereNull('actual_date_of_departure')->count();

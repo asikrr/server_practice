@@ -293,12 +293,15 @@ class Site
 
     public function residents(Request $request): string
     {
-        $residents = Resident::active()->with([
-            'gender', 
-            'status', 
-            'residences.room.dormitory', 
-            'residences.payment'
-        ])->get();
+        $user_id = app()->auth->user()->getId();
+        $room_ids = Room::whereHas('dormitory', fn($q) => $q->where('user_id', $user_id))->pluck('room_id');
+
+        $residents = Resident::active()
+            ->whereHas('residences', fn($q) => $q->whereIn('room_id', $room_ids))
+            ->with([
+                'gender', 
+                'status', 
+                'residences' => fn($q) => $q->whereNull('actual_date_of_departure')->with(['room.dormitory', 'payment'])])->get();
 
         return (new View())->render('site.residents', [
             'residents' => $residents
@@ -453,13 +456,28 @@ class Site
 
     public function rooms(Request $request): string
     {
-        $rooms = Room::all();
+        $user = app()->auth->user(); 
+        $is_admin = $user->role_id == 1; 
+
+        $query = Room::with([
+            'dormitory', 
+            'type', 
+            'residences' => fn($q) => $q->whereNull('actual_date_of_departure')
+        ]);
+
+        if (!$is_admin) {
+            $query->whereHas('dormitory', fn($q) => $q->where('user_id', $user->getId()));
+        }
+
+        $rooms = $query->get();
         $types = RoomType::all();
         $dormitories = Dormitory::all();
+
         return (new View())->render('site.rooms', [
                 'rooms' => $rooms, 
                 'types' => $types,
-                'dormitories' => $dormitories
+                'dormitories' => $dormitories,
+                'request' => $request
             ]);
     }
 

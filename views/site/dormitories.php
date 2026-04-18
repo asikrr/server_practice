@@ -33,6 +33,11 @@
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Кол-во комнат</p>
+                    <?php
+                    foreach ($dormitories ?? [] as $d) {
+                        echo '<p>' . $d->get_rooms_count() . '</p>';
+                    }
+                    ?>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Цена</p>

@@ -17,4 +17,14 @@ class Dormitory extends Model
         'price',
         'user_id'
     ];
+
+    public function rooms()
+    {
+        return $this->hasMany(Room::class, 'dormitory_id', 'dormitory_id');
+    }
+
+    public function get_rooms_count(): int
+    {
+        return $this->rooms()->count();
+    }
 }
