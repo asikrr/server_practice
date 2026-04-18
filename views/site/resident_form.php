@@ -1,45 +1,78 @@
 <section class="resident-form">
     <div class="wrapper">
-        <h2>Добавление жильца</h2>
+        <h3><?= $message ?? ''; ?></h3>
+        <h2><?= $pageTitle ?? 'Добавление жильца' ?></h2>
         <div class="container">
-            <form method="post" class="form">
+            <form method="post" enctype="multipart/form-data" class="form">
+                <input type="hidden" name="csrf_token" value="<?= app()->auth::generateCSRF() ?>">
+                <?php if (isset($room_id)): ?>
+                    <input type="hidden" name="room_id" value="<?= $room_id ?>">
+                <?php endif; ?>
                 <div class="form-fields">
                     <div class="form-field">
-                        <label for="last-name">Фамилия</label>
-                        <input type="text" name="last_name" id="last-name">
+                        <label>Фамилия</label>
+                        <input type="text" name="last_name" value="<?= $resident->last_name ?? '' ?>" required>
                     </div>
                     <div class="form-field">
-                        <label for="first-name">Имя</label>
-                        <input type="text" name="first_name" id="first-name">
+                        <label>Имя</label>
+                        <input type="text" name="first_name" value="<?= $resident->first_name ?? '' ?>" required>
                     </div>
                     <div class="form-field">
-                        <label for="patronymic">Отчество</label>
-                        <input type="text" name="patronymic" id="patronymic">
+                        <label>Отчество</label>
+                        <input type="text" name="patronymic" value="<?= $resident->patronymic ?? '' ?>" required>
                     </div>
                 </div>
                 <div class="form-fields">
                     <div class="form-field">
-                        <label for="passport">Паспорт</label>
-                        <input type="text" name="passport" id="passport">
+                        <label>Паспорт</label>
+                        <input type="text" name="passport" value="<?= $resident->passport ?? '' ?>" required>
                     </div>
                     <div class="form-field">
-                        <label for="gender-select">Пол</label>
-                        <select id="gender-select" name="gender-select">
+                        <label>Пол</label>
+                        <select name="gender_id" <?= $resident ? 'disabled' : '' ?> required>
+                            <option value="">Выберите</option>
+                            <?php foreach ($genders ?? [] as $g): ?>
+                                <option value="<?= $g->gender_id ?>" <?= $resident && $g->gender_id == $resident->gender_id ? 'selected' : '' ?>>
+                                    <?= $g->gender_name ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="form-field">
-                        <label for="status-select">Статус</label>
-                        <select id="status-select" name="status-select">
+                        <label>Статус</label>
+                        <select name="status_id" required>
+                            <option value="">Выберите</option>
+                            <?php foreach ($statuses ?? [] as $s): ?>
+                                <option value="<?= $s->status_id ?>" <?= $resident && $s->status_id == $resident->status_id ? 'selected' : '' ?>>
+                                    <?= $s->status_name ?>
+                                </option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
                 <div class="form-fields">
                     <div class="form-field">
-                        <label for="residence-order-num">№ приказа о заселении</label>
-                        <input type="text" name="residence_order_num" id="residence-order-num">
+                        <label>№ приказа о заселении</label>
+                        <input type="text" name="residence_order_num" value="<?= $residence->residence_order_num ?? '' ?>" required>
+                    </div>
+                    <div class="form-field">
+                        <label>Дата заезда</label>
+                        <input type="date" 
+                            name="date_of_entry" 
+                            value="<?= $residence->date_of_entry ?? date('Y-m-d') ?>" 
+                            <?= $residence ? 'disabled' : '' ?> 
+                            required>
+                    </div>
+                    <div class="form-field">
+                        <label>Дата выезда</label>
+                        <input type="date" name="date_of_departure" value="<?= $residence->date_of_departure ?? '' ?>">
+                    </div>
+                    <div class="form-field">
+                        <label>Квитанция об оплате</label>
+                        <input type="file" name="receipt_file" accept=".pdf,.jpg,.jpeg,.png">
                     </div>
                 </div>
-                <button>Сохранить</button>
+                <button type="submit">Сохранить</button>
             </form>
         </div>
     </div>

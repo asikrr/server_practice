@@ -7,6 +7,11 @@ use Model\User;
 use Model\Dormitory;
 use Model\Room;
 use Model\RoomType;
+use Model\Gender;
+use Model\Payment;
+use Model\Residence;
+use Model\Resident;
+use Model\ResidentStatus;
 use Src\View;
 use Src\Request;
 use Src\Auth\Auth;
@@ -270,12 +275,144 @@ class Site
 
     public function residents(Request $request): string
     {
-        return (new View())->render('site.residents');
+        $residents = Resident::with([
+            'gender', 
+            'status', 
+            'residences.room.dormitory', 
+            'residences.payment'
+        ])->get();
+
+        return (new View())->render('site.residents', [
+            'residents' => $residents
+        ]);
     }
 
-    public function resident_form(Request $request): string
+    public function resident_create(int $room_id, Request $request): string
     {
-        return (new View())->render('site.resident_form');
+        $genders = Gender::all();
+        $statuses = ResidentStatus::all();
+
+        if ($request->method === 'POST') {
+            $validator = new Validator($request->all(), [
+                'last_name' => ['required'],
+                'first_name' => ['required'],
+                'patronymic' => ['required'],
+                'passport' => ['required'],
+                'gender_id' => ['required'],
+                'status_id' => ['required'],
+                'residence_order_num' => ['required'],
+                'date_of_entry' => ['required'],
+                'date_of_departure' => ['required'] 
+            ], ['required' => 'Поле :field обязательно']);
+
+            if ($validator->fails()) {
+                return (new View())->render('site.resident_form', [
+                    'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE),
+                    'resident' => null, 'residence' => null, 'room_id' => $room_id,
+                    'pageTitle' => 'Добавление жильца', 'genders' => $genders, 'statuses' => $statuses
+                ]);
+            }
+
+            $existing = Resident::where('passport', $request->passport)->first();
+            if ($existing && $existing->getCurrentResidence()) {
+                return (new View())->render('site.resident_form', [
+                    'message' => json_encode(['passport' => ['Человек с таким паспортом уже проживает в общежитии']], JSON_UNESCAPED_UNICODE),
+                    'resident' => null, 'residence' => null, 'room_id' => $room_id,
+                    'pageTitle' => 'Добавление жильца', 'genders' => $genders, 'statuses' => $statuses
+                ]);
+            }
+
+            $resident = $existing ?? Resident::create([
+                'last_name' => $request->last_name,
+                'first_name' => $request->first_name,
+                'patronymic' => $request->patronymic,
+                'passport' => $request->passport,
+                'gender_id' => $request->gender_id,
+                'status_id' => $request->status_id
+            ]);
+
+            $room = Room::with('dormitory')->find($room_id);
+            $price = $room->dormitory->price;
+
+            $entryDate = $request->date_of_entry;
+            $departureDate = $request->date_of_departure;
+
+            $receiptPath = $this->upload_receipt_file($request->files()['receipt_file'] ?? null);
+            $residence = $this->create_residence(
+                $resident->resident_id,
+                $room_id,
+                $request->residence_order_num,
+                $price,
+                $entryDate,
+                $departureDate
+            );
+
+            $this->createPayment($residence->residence_id, $receiptPath);
+
+            app()->route->redirect('/rooms');
+        }
+
+        return (new View())->render('site.resident_form', [
+            'resident' => null, 'residence' => null, 'room_id' => $room_id,
+            'pageTitle' => 'Добавление жильца', 'genders' => $genders, 'statuses' => $statuses
+        ]);
+    }
+
+    public function resident_update(int $id, Request $request): string
+    {
+        $resident = Resident::where('resident_id', $id)->first();
+        if (!$resident) app()->route->redirect('/residents');
+
+        $residence = $resident->getCurrentResidence();
+        $genders = Gender::all();
+        $statuses = ResidentStatus::all();
+
+        if ($request->method === 'POST') {
+            $validator = new Validator($request->all(), [
+                'last_name' => ['required'],
+                'first_name' => ['required'],
+                'patronymic' => ['required'],
+                'passport' => ['required'],
+                'status_id' => ['required'],
+                'residence_order_num' => ['required'],
+                'date_of_entry' => ['required'],
+                'date_of_departure' => ['required']
+            ], ['required' => 'Поле :field обязательно']);
+
+            if ($validator->fails()) {
+                return (new View())->render('site.resident_form', [
+                    'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE),
+                    'resident' => $resident, 'residence' => $residence,
+                    'pageTitle' => 'Редактирование жильца', 'genders' => $genders, 'statuses' => $statuses
+                ]);
+            }
+
+            Resident::where('resident_id', $id)->update([
+                'last_name' => $request->last_name,
+                'first_name' => $request->first_name,
+                'patronymic' => $request->patronymic,
+                'passport' => $request->passport,
+                'status_id' => $request->status_id
+            ]);
+
+            if ($residence) {
+                Residence::where('residence_id', $residence->residence_id)->update([
+                    'residence_order_num' => $request->residence_order_num
+                ]);
+
+                $receiptPath = $this->upload_receipt_file($request->files()['receipt_file'] ?? null);
+                if ($receiptPath) {
+                    $this->create_payment($residence->residence_id, $receiptPath);
+                }
+            }
+
+            app()->route->redirect('/residents');
+        }
+
+        return (new View())->render('site.resident_form', [
+            'resident' => $resident, 'residence' => $residence,
+            'pageTitle' => 'Редактирование жильца', 'genders' => $genders, 'statuses' => $statuses
+        ]);
     }
 
     public function rooms(Request $request): string
@@ -369,6 +506,49 @@ class Site
     {
         Room::where('room_id', $id)->delete();
         app()->route->redirect('/rooms');
+    }
+
+    private function upload_receipt_file(?array $file): ?string
+    {
+        if (empty($file['tmp_name'])) return null;
+
+        $dir = __DIR__ . '/../../public/uploads/receipts/';
+
+        $name = uniqid() . '_' . basename($file['name']);
+        if (move_uploaded_file($file['tmp_name'], $dir . $name)) {
+            $config = require __DIR__ . '/../../config/path.php';
+            return '/' . $config['root'] . '/uploads/receipts/' . $name;
+        }
+        return null;
+    }
+
+    private function create_residence(int $residentId, int $roomId, string $orderNum, float $price, ?string $entryDate, ?string $departureDate): Residence
+    {
+        return Residence::create([
+            'resident_id' => $residentId,
+            'room_id' => $roomId,
+            'date_of_entry' => $entryDate,
+            'date_of_departure' => $departureDate,
+            'residence_order_num' => $orderNum,
+            'residence_price' => $price  
+        ]);
+    }
+
+    private function create_payment(int $residenceId, ?string $receiptPath): void
+    {
+        if (!$receiptPath) return;
+
+        $residence = Residence::with('room.dormitory')->find($residenceId);
+        $amount = $residence->room->dormitory->price;
+
+        Payment::updateOrCreate(
+            ['residence_id' => $residenceId],
+            [                                 
+                'date' => date('Y-m-d'),
+                'amount' => $amount,
+                'receipt_file' => $receiptPath
+            ]
+        );
     }
 
     // public function index(Request $request): string

@@ -15,4 +15,14 @@ class Room extends Model
         'capacity',
         'type_id',
     ];
+
+    public function dormitory()
+    {
+        return $this->belongsTo(Dormitory::class, 'dormitory_id', 'dormitory_id');
+    }
+
+    public function residences()
+    {
+        return $this->hasMany(Residence::class, 'room_id', 'room_id');
+    }
 }
