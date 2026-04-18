@@ -5,19 +5,19 @@
             <form method="get">
                 <div class="form-field">
                     <select name="type_filter">
-                        <option value="">Все</option>
-                        <option value="family">Семейные</option>
-                        <option value="male">Мужские</option>
-                        <option value="female">Женские</option>
+                        <option value="" <?= empty($request->type_filter) ? 'selected' : '' ?>>Все</option>
+                        <option value="1" <?= ($request->type_filter ?? '') == '1' ? 'selected' : '' ?>>Мужские</option>
+                        <option value="2" <?= ($request->type_filter ?? '') == '2' ? 'selected' : '' ?>>Женские</option>
+                        <option value="3" <?= ($request->type_filter ?? '') == '3' ? 'selected' : '' ?>>Семейные</option>
                     </select>
                 </div>
                 <div class="form-field">
                     <select name="availability_filter">
-                        <option value="">Все</option>
-                        <option value="available">Со свободными местами</option>
+                        <option value="" <?= empty($request->availability_filter) ? 'selected' : '' ?>>Все</option>
+                        <option value="available" <?= ($request->availability_filter ?? '') == 'available' ? 'selected' : '' ?>>Со свободными местами</option>
                     </select>
                 </div>
-                <button>Применить</button>
+                <button type="submit">Применить</button>
             </form>
         </div>
         <div class="container">

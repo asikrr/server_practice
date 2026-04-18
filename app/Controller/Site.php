@@ -505,6 +505,14 @@ class Site
             $query->whereHas('dormitory', fn($q) => $q->where('user_id', $user->getId()));
         }
 
+        if ($request->type_filter !== '') {
+            $query->where('type_id', $request->type_filter);
+        }
+
+        if ($request->availability_filter === 'available') {
+            $query->whereRaw('(SELECT COUNT(*) FROM residences WHERE residences.room_id = rooms.room_id AND actual_date_of_departure IS NULL) < rooms.capacity');
+        }
+
         $rooms = $query->get();
         $types = RoomType::all();
         $dormitories = Dormitory::all();
