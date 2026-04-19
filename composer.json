@@ -14,7 +14,8 @@
         "php": "^7.4 | ^8.0",
         "illuminate/database": "12.x-dev",
         "illuminate/events": "12.x-dev",
-        "nikic/fast-route": "^2.0@dev"
+        "nikic/fast-route": "^2.0@dev",
+        "asikrr/collect": "dev-main"
     },
     "autoload": {
        "psr-4": {

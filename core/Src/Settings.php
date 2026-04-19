@@ -3,6 +3,7 @@
 namespace Src;
 
 use Error;
+use function Collect\collection;
 
 class Settings
 {
@@ -15,7 +16,7 @@ class Settings
 
     public function __get($key)
     {
-        if (array_key_exists($key, $this->_settings)) {
+        if (collection($this->_settings)->has($key)) {
             return $this->_settings[$key];
         }
         throw new Error('Accessing a non-existent property');

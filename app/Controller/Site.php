@@ -2,6 +2,8 @@
 
 namespace Controller;
 
+use function Collect\collection;
+
 use Model\Post;
 use Model\User;
 use Model\Dormitory;
@@ -185,19 +187,17 @@ class Site
     public function debtors(Request $request): string
     {
         $activeResidents = Resident::active()
-        ->with(['residences' => fn($q) => $q->whereNull('actual_date_of_departure')->with(['room', 'payment'])])->get();
+            ->with(['residences' => fn($q) => $q->whereNull('actual_date_of_departure')->with(['room', 'payment'])])
+            ->get();
 
-        $debtors = [];
-        foreach ($activeResidents as $resident) {
-            $residence = $resident->residences->first();
-            if ($residence && !$residence->payment) {
-                $debtors[] = [
-                    'resident' => $resident,
-                    'room_number' => $residence->room->room_number,
-                    'debt' => $residence->residence_price
-                ];
-            }
-        }
+        $debtors = collection($activeResidents->all())
+            ->filter(fn($r) => $r->residences->first() && !$r->residences->first()->payment)
+            ->map(fn($r) => [
+                'resident' => $r,
+                'room_number' => $r->residences->first()->room->room_number,
+                'debt' => $r->residences->first()->residence_price
+            ])
+            ->toArray(); 
 
         return (new View())->render('site.debtors', [
             'debtors' => $debtors,
