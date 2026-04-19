@@ -24,12 +24,9 @@
             <div class="table">
                 <div class="table-column">
                     <p class="bold-text">Общежитие</p>
-                    <?php
-                    foreach ($rooms ?? [] as $r) {
-                        $dormitory = $dormitories->where('dormitory_id', $r->dormitory_id)->first();
-                        echo '<p>' . $dormitory->dormitory_number . '</p>';
-                    }
-                    ?>
+                    <?php foreach ($rooms as $r): ?>
+                        <p><?= $r->dormitory->dormitory_number ?? '—' ?></p>
+                    <?php endforeach; ?>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Номер</p>
@@ -49,12 +46,9 @@
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Тип</p>
-                    <?php
-                    foreach ($rooms ?? [] as $r) {
-                        $type = $types->where('type_id', $r->type_id)->first();
-                        echo '<p>' . $type->type_name . '</p>';
-                    }
-                    ?>
+                    <?php foreach ($rooms as $r): ?>
+                        <p><?= $r->type->type_name ?? '—' ?></p>
+                    <?php endforeach; ?>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Вместимость</p>
@@ -70,6 +64,7 @@
                         <p><?= $r->get_current_residents_count() ?></p>
                     <?php endforeach; ?>
                 </div>
+                <?php if (!$is_admin): ?> 
                 <div class="table-column">
                     <p class="bold-text">Заселение</p>
                     <?php foreach ($rooms ?? [] as $r): ?>
@@ -80,6 +75,7 @@
                         <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
+                <?php endif; ?>
                 <div class="table-column">
                     <p class="bold-text">Редактирование</p>
                     <?php foreach ($rooms ?? [] as $r): ?>

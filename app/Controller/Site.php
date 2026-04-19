@@ -207,7 +207,7 @@ class Site
 
     public function dormitories(Request $request): string
     {
-        $dormitories = Dormitory::all();
+        $dormitories = Dormitory::with('commandant')->get();
         $commandants = User::where('role_id', 2)->get();
         $busy_ids = Room::whereIn('dormitory_id', $dormitories->pluck('dormitory_id'))->pluck('dormitory_id')->unique()->toArray();
 
@@ -518,7 +518,7 @@ class Site
             $query->whereRaw('(SELECT COUNT(*) FROM residences WHERE residences.room_id = rooms.room_id AND actual_date_of_departure IS NULL) < rooms.capacity');
         }
 
-        $rooms = $query->get();
+        $rooms = $query->with(['dormitory', 'type'])->get(); 
         $types = RoomType::all();
         $dormitories = Dormitory::all();
 
@@ -526,7 +526,8 @@ class Site
                 'rooms' => $rooms, 
                 'types' => $types,
                 'dormitories' => $dormitories,
-                'request' => $request
+                'request' => $request,
+                'is_admin' => $is_admin,
             ]);
     }
 

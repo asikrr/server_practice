@@ -24,12 +24,9 @@
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Комендант</p>
-                    <?php
-                    foreach ($dormitories ?? [] as $d) {
-                        $commandant = $commandants->where('user_id', $d->user_id)->first();
-                        echo '<p>' . ($commandant ? $commandant->full_name : 'Не назначен') . '</p>';
-                    }
-                    ?>
+                    <?php foreach ($dormitories ?? [] as $d): ?>
+                        <p><?= $d->commandant->full_name ?? 'Не назначен' ?></p>
+                    <?php endforeach; ?>
                 </div>
                 <div class="table-column">
                     <p class="bold-text">Кол-во комнат</p>
