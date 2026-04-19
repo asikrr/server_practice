@@ -8,10 +8,10 @@ return [
         'commandant' => \Middlewares\CommandantMiddleware::class
     ],
     'validators' => [
-        'required' => \Validators\RequireValidator::class,
+        'required' => \Validator\Validators\RequireValidator::class,
+        'is_numeric' => \Validator\Validators\IsNumericValidator::class,
+        'positive_number' => \Validator\Validators\PositiveNumberValidator::class,
         'unique' => \Validators\UniqueValidator::class,
-        'is_numeric' => Validators\NumericValidator::class,
-        'min_number'  => Validators\MinNumberValidator::class,
         'max_file_size' => Validators\MaxFileSizeValidator::class,
         'date' => Validators\DateValidator::class,
         'unique_room' => Validators\UniqueRoomValidator::class,

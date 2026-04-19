@@ -2,7 +2,7 @@
 namespace Validators;
 
 use Model\Resident;
-use Src\Validator\AbstractValidator;
+use Validator\AbstractValidator;
 
 class PassportValidator extends AbstractValidator
 {

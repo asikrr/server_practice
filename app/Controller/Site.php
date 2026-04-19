@@ -3,7 +3,6 @@
 namespace Controller;
 
 use function Collect\collection;
-
 use Model\Post;
 use Model\User;
 use Model\Dormitory;
@@ -17,7 +16,7 @@ use Model\ResidentStatus;
 use Src\View;
 use Src\Request;
 use Src\Auth\Auth;
-use Src\Validator\Validator;
+use Validator\Validator;
 
 class Site
 {
@@ -89,7 +88,8 @@ class Site
             ], [
                 'required' => 'Поле :field пусто',
                 'unique' => 'Поле :field должно быть уникально'
-            ]);
+            ],
+            app()->settings->app['validators']);
 
             if($validator->fails()){
                 return new View('site.commandant_form', [
@@ -136,7 +136,8 @@ class Site
             ], [
                 'required' => 'Поле :field пусто',
                 'unique' => 'Поле :field должно быть уникально'
-            ]);
+            ],
+            app()->settings->app['validators']);
 
             if ($validator->fails()) {
                 return (new View())->render('site.commandant_form', [
@@ -226,13 +227,14 @@ class Site
                 'city' => ['required'],
                 'street' => ['required'],
                 'building' => ['required'],
-                'price' => ['required', 'is_numeric', 'min_number']
+                'price' => ['required', 'is_numeric', 'positive_number']
             ], [
                 'required' => 'Поле :field пусто',
                 'unique' => 'Поле :field должно быть уникально',
                 'is_numeric' => 'Поле :field должно быть числом',
-                'min_number' => 'Поле :field не должно быть <= 0'
-            ]);
+                'positive_number' => 'Поле :field не должно быть <= 0'
+            ],
+            app()->settings->app['validators']);
 
             if ($validator->fails()) {
                 return (new View())->render('site.dormitory_form', [
@@ -265,13 +267,14 @@ class Site
                 'city' => ['required'],
                 'street' => ['required'],
                 'building' => ['required'],
-                'price' => ['required', 'is_numeric', 'min_number']
+                'price' => ['required', 'is_numeric', 'positive_number']
             ], [
                 'required' => 'Поле :field пусто',
                 'unique' => 'Поле :field должно быть уникально',
                 'is_numeric' => 'Поле :field должно быть числом',
-                'min_number' => 'Поле :field не должно быть <= 0'
-            ]);
+                'positive_number' => 'Поле :field не должно быть <= 0'
+            ],
+            app()->settings->app['validators']);
 
             if ($validator->fails()) {
                 return (new View())->render('site.dormitory_form', [
@@ -368,7 +371,8 @@ class Site
             ], ['required' => 'Поле :field обязательно',
                 'date' => 'Поле :field не может быть <= дате заезда',
                 'passport' => 'Человек с таким паспортом уже проживает в общежитии',
-                'max_file_size' => 'Размер файла не должен превышать 2МБ']);
+                'max_file_size' => 'Размер файла не должен превышать 2МБ'],
+                app()->settings->app['validators']);
 
             if ($validator->fails()) {
                 return (new View())->render('site.resident_form', [
@@ -457,7 +461,8 @@ class Site
                 'unique' => 'Поле :field должно быть уникально',
                 'passport' => 'Этот паспорт уже существует в БД',
                 'date' => 'Поле :field не может быть <= дате заезда',
-                'max_file_size' => 'Размер файла не должен превышать 2МБ']);
+                'max_file_size' => 'Размер файла не должен превышать 2МБ'],
+                app()->settings->app['validators']);
 
             if ($validator->fails()) {
                 return (new View())->render('site.resident_form', [
@@ -538,12 +543,13 @@ class Site
             $validator = new Validator($request->all(), [
                 'room_number' => ['required', 'unique_room:' . $dormitory_id],
                 'floor' => ['required'], 
-                'capacity' => ['required', 'is_numeric', 'min_number'],
+                'capacity' => ['required', 'is_numeric', 'positive_number'],
                 'type_id' => ['required']
             ], ['required' => 'Поле :field пусто',
                 'unique_room' => 'Комната с таким номером уже существует в общежитии',
                 'is_numeric' => 'Поле :field должно быть числом',
-                'min_number' => 'Поле :field не должно быть <= 0']);
+                'positive_number' => 'Поле :field не должно быть <= 0'],
+                app()->settings->app['validators']);
 
             if ($validator->fails()) {
                 return (new View())->render('site.room_form', [
@@ -583,12 +589,13 @@ class Site
             $validator = new Validator($request->all(), [
                 'room_number' => ['required', 'unique_room:' . $dormitory_id . ',' . $room->room_id],
                 'floor' => ['required'],
-                'capacity' => ['required', 'is_numeric', 'min_number'],
+                'capacity' => ['required', 'is_numeric', 'positive_number'],
                 'type_id' => ['required']
             ], ['required' => 'Поле :field пусто',
                 'unique_room' => 'Комната с таким номером уже существует в общежитии',
                 'is_numeric' => 'Поле :field должно быть числом',
-                'min_number' => 'Поле :field не должно быть <= 0']);
+                'positive_number' => 'Поле :field не должно быть <= 0'],
+                app()->settings->app['validators']);
 
             if ($validator->fails()) {
                 return (new View())->render('site.room_form', [
