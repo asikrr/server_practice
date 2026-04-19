@@ -10,6 +10,6 @@ class DateValidator extends AbstractValidator
 
     public function rule(): bool
     {
-        return $this->value >= $this->args[0];
+        return $this->value > $this->args[0];
     }
 }

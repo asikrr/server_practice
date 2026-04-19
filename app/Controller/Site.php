@@ -366,7 +366,7 @@ class Site
                 'date_of_departure' => ['required', 'date:' . $request->date_of_entry],
                 'receipt_file' => ['max_file_size']
             ], ['required' => 'Поле :field обязательно',
-                'date' => 'Поле :field не может быть раньше даты заезда',
+                'date' => 'Поле :field не может быть <= дате заезда',
                 'passport' => 'Человек с таким паспортом уже проживает в общежитии',
                 'max_file_size' => 'Размер файла не должен превышать 2МБ']);
 
@@ -456,7 +456,7 @@ class Site
             ], ['required' => 'Поле :field обязательно',
                 'unique' => 'Поле :field должно быть уникально',
                 'passport' => 'Этот паспорт уже существует в БД',
-                'date' => 'Поле :field не может быть раньше даты заезда',
+                'date' => 'Поле :field не может быть <= дате заезда',
                 'max_file_size' => 'Размер файла не должен превышать 2МБ']);
 
             if ($validator->fails()) {
