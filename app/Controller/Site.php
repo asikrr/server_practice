@@ -48,6 +48,7 @@ class Site
 
         if (Auth::attempt($request->all())) {
             app()->route->redirect('/');
+            return '';
         }
 
         return new View('site.login', ['message' => 'Неправильные логин или пароль']);
@@ -86,7 +87,7 @@ class Site
             app()->settings->app['validators']);
 
             if ($validator->fails()) {
-                return new View('site.commandant_form', [
+                return (new View())->render('site.commandant_form', [
                     'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE),
                     'free_dorms' => $free_dorms,
                     'commandant' => null,
@@ -101,6 +102,7 @@ class Site
             Dormitory::assign_dormitory_to_commandant($commandant->user_id, $data['dormitory_id'] ?? null);
             
             app()->route->redirect('/commandants');
+            return '';
         }
         
         return (new View())->render('site.commandant_form', [
