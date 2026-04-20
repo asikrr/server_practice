@@ -69,4 +69,21 @@ class Room extends Model
 
         return $query->get();
     }
+
+    public static function is_gender_allowed(int $room_id, int $gender_id): bool
+    {
+        $room = self::with('type')->find($room_id);
+        
+        if (!$room || !$room->type) {
+            return false;
+        }
+
+        $type_id = $room->type->type_id;
+
+        if ($type_id == 3) {
+            return true;
+        }
+
+        return $type_id == $gender_id;
+    }
 }

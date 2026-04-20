@@ -207,7 +207,6 @@ class Site
             $validator = new Validator($request->all(), [
                 'last_name' => ['required'],
                 'first_name' => ['required'],
-                'patronymic' => ['required'],
                 'passport' => ['required', 'passport'],
                 'gender_id' => ['required'],
                 'status_id' => ['required'],
@@ -222,11 +221,21 @@ class Site
                 'max_file_size' => 'Размер файла не должен превышать 2МБ'
             ], app()->settings->app['validators']);
 
-            if ($validator->fails()) {
+            $custom_errors = [];
+        
+            if (!Room::is_gender_allowed($room_id, $request->gender_id)) {
+                $custom_errors['gender_id'][] = 'Пол жильца не соответствует типу комнаты';
+            }
+
+            if ($validator->fails() || !empty($custom_errors)) {
+                $all_errors = array_merge($validator->errors(), $custom_errors);
+                
                 return (new View())->render('site.resident_form', [
-                    'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE),
+                    'message' => json_encode($all_errors, JSON_UNESCAPED_UNICODE),
                     'resident' => null, 'residence' => null, 'room_id' => $room_id,
-                    'page_title' => 'Добавление жильца', 'genders' => $options['genders'], 'statuses' => $options['statuses']
+                    'page_title' => 'Добавление жильца', 
+                    'genders' => $options['genders'], 
+                    'statuses' => $options['statuses']
                 ]);
             }
 
@@ -301,7 +310,7 @@ class Site
             $receipt_path = $this->upload_receipt_file($request->files()['receipt_file'] ?? null);
             
             if ($receipt_path && $residence) {
-                Payment::update_receipt($residence->residence_id, $receipt_path); 
+                Payment::create_or_update_for_residence($residence->residence_id, $receipt_path);
             }
 
             app()->route->redirect('/residents');
