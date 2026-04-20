@@ -45,28 +45,9 @@
                     ?>
                 </div>
                 <div class="table-column">
-                    <p class="bold-text">Комнаты</p>
+                    <p class="bold-text">Добавление комнаты</p>
                     <?php foreach ($dormitories ?? [] as $d): ?>
                         <a href="<?= app()->route->getUrl('/room_create/' . $d->dormitory_id) ?>" class="underline-text">Добавить комнату</a>
-                    <?php endforeach; ?>
-                </div>
-                <div class="table-column">
-                    <p class="bold-text">Редактирование</p>
-                    <?php foreach ($dormitories ?? [] as $d): ?>
-                        <a href="<?= app()->route->getUrl('/dormitory_update/' . $d->dormitory_id) ?>" class="underline-text">Редактировать</a>
-                    <?php endforeach; ?>
-                </div>
-                <div class="table-column">
-                    <p class="bold-text">Удаление</p>
-                    <?php foreach ($dormitories ?? [] as $d): ?>
-                        <?php if (!in_array($d->dormitory_id, $busy_ids)): ?>
-                            <form method="POST" action="<?= app()->route->getUrl('/dormitory_delete/' . $d->dormitory_id) ?>">
-                                <input type="hidden" name="csrf_token" value="<?= app()->auth::generateCSRF() ?>">
-                                <button class="underline-text danger-text">Удалить</button>
-                            </form>
-                        <?php else: ?>
-                            <p>-</p>
-                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
             </div>

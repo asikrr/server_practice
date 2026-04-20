@@ -22,10 +22,24 @@ class Payment extends Model
         return $this->belongsTo(Residence::class, 'residence_id', 'residence_id');
     }
 
-    public function scopeActive($query)
+    public static function update_receipt(int $residence_id, string $path): void
     {
-        return $query->whereHas('residences', function ($query) {
-            $query->whereNull('actual_date_of_departure');
-        });
+        self::where('residence_id', $residence_id)
+            ->update(['receipt_file' => $path]);
+    }
+
+    public static function create_or_update_for_residence(int $residence_id, string $receipt_path): void
+    {
+        $residence = Residence::with('room.dormitory')->find($residence_id);
+        if (!$residence) return;
+
+        self::updateOrCreate(
+            ['residence_id' => $residence_id],
+            [
+                'date' => date('Y-m-d'),
+                'amount' => $residence->room->dormitory->price,
+                'receipt_file' => $receipt_path
+            ]
+        );
     }
 }

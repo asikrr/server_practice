@@ -43,4 +43,19 @@ class User extends Model implements IdentityInterface
         return self::where(['login' => $credentials['login'],
             'password' => md5($credentials['password'])])->first();
     }
+
+    public static function find_by_id(int $id): ?self
+    {
+        return self::where('user_id', $id)->first();
+    }
+
+    public static function get_commandants()
+    {
+        return self::where('role_id', 2)->get();
+    }
+
+    public static function get_commandants_count(): int
+    {
+        return self::where('role_id', 2)->count();
+    }
 }

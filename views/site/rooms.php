@@ -76,29 +76,6 @@
                     <?php endforeach; ?>
                 </div>
                 <?php endif; ?>
-                <div class="table-column">
-                    <p class="bold-text">Редактирование</p>
-                    <?php foreach ($rooms ?? [] as $r): ?>
-                        <?php if ($r->get_current_residents_count() == 0): ?>
-                            <a href="<?= app()->route->getUrl('/room_update/' . $r->room_id) ?>" class="underline-text">Редактировать</a>
-                        <?php else: ?>
-                            <p>-</p>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </div>
-                <div class="table-column">
-                    <p class="bold-text">Удаление</p>
-                    <?php foreach ($rooms ?? [] as $r): ?>
-                        <?php if ($r->get_current_residents_count() == 0): ?>
-                            <form method="POST" action="<?= app()->route->getUrl('/room_delete/' . $r->room_id) ?>">
-                                <input type="hidden" name="csrf_token" value="<?= app()->auth::generateCSRF() ?>">
-                                <button class="underline-text danger-text">Удалить</button>
-                            </form>
-                        <?php else: ?>
-                            <p>-</p>
-                        <?php endif; ?>
-                    <?php endforeach; ?>
-                </div>
             </div>
         </div>
     </div>

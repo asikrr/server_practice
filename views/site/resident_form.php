@@ -8,31 +8,32 @@
                 <?php if (isset($room_id)): ?>
                     <input type="hidden" name="room_id" value="<?= $room_id ?>">
                 <?php endif; ?>
+                <?php if (!$resident): ?>
                 <div class="form-fields">
                     <div class="form-field">
                         <label for="last-name">Фамилия</label>
-                        <input type="text" id="last-name" name="last_name" value="<?= $resident->last_name ?? '' ?>">
+                        <input type="text" id="last-name" name="last_name" value="">
                     </div>
                     <div class="form-field">
                         <label for="first-name">Имя</label>
-                        <input type="text" id="first-name" name="first_name" value="<?= $resident->first_name ?? '' ?>">
+                        <input type="text" id="first-name" name="first_name" value="">
                     </div>
                     <div class="form-field">
                         <label for="patronymic">Отчество</label>
-                        <input type="text" id="patronymic" name="patronymic" value="<?= $resident->patronymic ?? '' ?>">
+                        <input type="text" id="patronymic" name="patronymic" value="">
                     </div>
                 </div>
                 <div class="form-fields">
                     <div class="form-field">
                         <label for="passport">Паспорт</label>
-                        <input type="text" id="passport" name="passport" value="<?= $resident->passport ?? '' ?>">
+                        <input type="text" id="passport" name="passport" value="">
                     </div>
                     <div class="form-field">
                         <label for="gender">Пол</label>
-                        <select id="gender" name="gender_id" <?= $resident ? 'disabled' : '' ?>>
+                        <select id="gender" name="gender_id">
                             <option value="">Выберите</option>
                             <?php foreach ($genders ?? [] as $g): ?>
-                                <option value="<?= $g->gender_id ?>" <?= $resident && $g->gender_id == $resident->gender_id ? 'selected' : '' ?>>
+                                <option value="<?= $g->gender_id ?>">
                                     <?= $g->gender_name ?>
                                 </option>
                             <?php endforeach; ?>
@@ -43,7 +44,7 @@
                         <select id="status" name="status_id">
                             <option value="">Выберите</option>
                             <?php foreach ($statuses ?? [] as $s): ?>
-                                <option value="<?= $s->status_id ?>" <?= $resident && $s->status_id == $resident->status_id ? 'selected' : '' ?>>
+                                <option value="<?= $s->status_id ?>">
                                     <?= $s->status_name ?>
                                 </option>
                             <?php endforeach; ?>
@@ -53,21 +54,17 @@
                 <div class="form-fields">
                     <div class="form-field">
                         <label for="residence-order-num">№ приказа о заселении</label>
-                        <input type="text" id="residence-order-num" name="residence_order_num" value="<?= $residence->residence_order_num ?? '' ?>">
+                        <input type="text" id="residence-order-num" name="residence_order_num" value="">
                     </div>
                     <div class="form-field">
                         <label for="date-of-entry">Дата заезда</label>
-                        <input type="date" 
-                            id="date-of-entry"
-                            name="date_of_entry" 
-                            value="<?= $residence->date_of_entry ?? date('Y-m-d') ?>" 
-                            <?= $residence ? 'disabled' : '' ?> 
-                            required>
+                        <input type="date" id="date-of-entry" name="date_of_entry" value="<?= date('Y-m-d') ?>" required>
                     </div>
                     <div class="form-field">
                         <label for="date-of-departure">Дата выезда</label>
-                        <input type="date" id="date-of-departure" name="date_of_departure" value="<?= $residence->date_of_departure ?? '' ?>">
+                        <input type="date" id="date-of-departure" name="date_of_departure" value="">
                     </div>
+                <?php endif; ?>
                     <div class="form-field">
                         <label for="receipt-file">Квитанция об оплате</label>
                         <input type="file" id="receipt-file" name="receipt_file" accept=".pdf,.jpg,.jpeg,.png">

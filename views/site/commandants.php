@@ -32,22 +32,9 @@
                     ?>
                 </div>
                 <div class="table-column">
-                    <p class="bold-text">Редактирование</p>
+                    <p class="bold-text">Прикрепление</p>
                     <?php foreach ($commandants ?? [] as $c): ?>
-                        <a href="<?= app()->route->getUrl('/commandant_update/' . $c->user_id) ?>" class="underline-text">Редактировать</a>
-                    <?php endforeach; ?>
-                </div>
-                <div class="table-column">
-                    <p class="bold-text">Удаление</p>
-                    <?php foreach ($commandants ?? [] as $c): ?>
-                        <?php if (!in_array($c->user_id, $busy_ids)): ?>
-                            <form method="POST" action="<?= app()->route->getUrl('/commandant_delete/' . $c->user_id) ?>">
-                                <input type="hidden" name="csrf_token" value="<?= app()->auth::generateCSRF() ?>">
-                                <button class="underline-text danger-text">Удалить</button>
-                            </form>
-                        <?php else: ?>
-                            <p>-</p>
-                        <?php endif; ?>
+                        <a href="<?= app()->route->getUrl('/commandant_update/' . $c->user_id) ?>" class="underline-text">Прикрепить к общежитию</a>
                     <?php endforeach; ?>
                 </div>
             </div>

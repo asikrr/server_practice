@@ -78,9 +78,9 @@
                     <?php endforeach; ?>
                 </div>
                 <div class="table-column">
-                    <p class="bold-text">Редактирование</p>
+                    <p class="bold-text">Загрузка квитанции</p>
                     <?php foreach ($residents ?? [] as $r): ?>
-                        <a href="<?= app()->route->getUrl('/resident_update/' . $r->resident_id) ?>" class="underline-text">Редактировать</a>
+                        <a href="<?= app()->route->getUrl('/resident_update/' . $r->resident_id) ?>" class="underline-text">Загрузить</a>
                     <?php endforeach; ?>
                 </div>
                 <div class="table-column">

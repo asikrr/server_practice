@@ -5,22 +5,22 @@
         <div class="container">
             <form method="post" class="form">
                 <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
+                <?php if (!$commandant): ?>
                 <div class="form-fields">
                     <div class="form-field">
                         <label for="full_name">ФИО</label>
-                        <input type="text" name="full_name" id="full-name" value="<?= $commandant->full_name ?? '' ?>">
+                        <input type="text" name="full_name" id="full-name" value="">
                     </div>
                     <div class="form-field">
                         <label for="login">Логин</label>
-                        <input type="text" name="login" id="login" value="<?= $commandant->login ?? '' ?>">
+                        <input type="text" name="login" id="login" value="">
                     </div>
-                    <?php if (!$commandant): ?> 
-                        <div class="form-field">
-                            <label for="password">Пароль</label>
-                            <input type="password" name="password" id="password">
-                        </div>
-                    <?php endif; ?>
+                    <div class="form-field">
+                        <label for="password">Пароль</label>
+                        <input type="password" name="password" id="password">
+                    </div>
                 </div>
+                <?php endif; ?>
                 <div class="form-fields">
                     <div class="form-field">
                         <label for="dorm-select">Прикрепить к общежитию</label>

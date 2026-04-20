@@ -3,6 +3,9 @@
 namespace Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Model\Room;
+use Model\Gender;
+use Model\ResidentStatus;
 
 class Resident extends Model
 {
@@ -43,5 +46,66 @@ class Resident extends Model
         return $query->whereHas('residences', function ($q) {
             $q->whereNull('actual_date_of_departure');
         });
+    }
+
+    public static function find_or_create_by_passport(array $data): self
+    {
+        $existing = self::where('passport', $data['passport'])->first();
+        return $existing ?? self::create($data);
+    }
+
+    public static function update_resident_data(int $id, array $data): void
+    {
+        self::where('resident_id', $id)->update($data);
+    }
+
+    public static function get_form_options(): array
+    {
+        return [
+            'genders' => Gender::all(),
+            'statuses' => ResidentStatus::all()
+        ];
+    }
+
+    public static function get_debtors(): array
+    {
+        return self::active()
+            ->with(['residences' => fn($q) => $q->whereNull('actual_date_of_departure')->with(['room', 'payment'])])
+            ->get()
+            ->filter(fn($r) => $r->residences->first() && !$r->residences->first()->payment)
+            ->map(fn($r) => [
+                'resident' => $r,
+                'room_number' => $r->residences->first()->room->room_number,
+                'debt' => $r->residences->first()->residence_price
+            ])
+            ->values() 
+            ->toArray();
+    }
+
+    public function scopeSearch($query, string $search)
+    {
+        if ($search === '') return $query;
+        return $query->where(function($q) use ($search) {
+            $q->where('last_name', 'like', "%{$search}%")
+              ->orWhere('first_name', 'like', "%{$search}%")
+              ->orWhere('patronymic', 'like', "%{$search}%");
+        });
+    }
+
+    public static function get_for_dormitory_commandant(int $user_id, string $search = '', string $sort_dir = 'asc')
+    {
+        $room_ids_query = Room::whereHas('dormitory', fn($q) => $q->where('user_id', $user_id))->select('room_id');
+
+        return self::active()
+            ->whereHas('residences', fn($q) => $q->whereIn('room_id', $room_ids_query))
+            ->with([
+                'gender', 
+                'status', 
+                'residences' => fn($q) => $q->whereNull('actual_date_of_departure')->with(['room', 'payment'])
+            ])
+            ->search($search)
+            ->orderBy('last_name', $sort_dir)
+            ->orderBy('first_name', $sort_dir)
+            ->get();
     }
 }
