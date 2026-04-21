@@ -51,7 +51,7 @@ class ResidentController {
 
             $custom_errors = [];
 
-            if (!Room::is_gender_allowed($room_id, $request->gender_id)) {
+            if (!Room::is_gender_allowed($room_id, (int)$request->gender_id)) {
                 $custom_errors['gender_id'][] = 'Пол жильца не соответствует типу комнаты';
             }
 

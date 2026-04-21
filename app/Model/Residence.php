@@ -34,4 +34,10 @@ class Residence extends Model
     {
         return $this->hasOne(Payment::class, 'residence_id', 'residence_id');
     }
+
+    public static function checkout(int $residence_id): void
+    {
+        self::where('residence_id', $residence_id)
+            ->update(['actual_date_of_departure' => date('Y-m-d')]);
+    }
 }
