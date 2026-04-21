@@ -5,22 +5,22 @@
         <div class="container">
             <form method="post" class="form">
                 <input name="csrf_token" type="hidden" value="<?= app()->auth::generateCSRF() ?>"/>
+                <?php if (empty($commandant->user_id)): ?>
                 <div class="form-fields">
                     <div class="form-field">
                         <label for="full_name">ФИО</label>
-                        <input type="text" name="full_name" id="full-name" 
-                               value="<?= $commandant->full_name ?? '' ?>">
+                        <input type="text" name="full_name" id="full-name" value="<?= $commandant->full_name ?? '' ?>">
                     </div>
                     <div class="form-field">
                         <label for="login">Логин</label>
-                        <input type="text" name="login" id="login" 
-                               value="<?= $commandant->login ?? '' ?>">
+                        <input type="text" name="login" id="login" value="<?= $commandant->login ?? '' ?>">
                     </div>
                     <div class="form-field">
                         <label for="password">Пароль</label>
                         <input type="password" name="password" id="password">
                     </div>
                 </div>
+                <?php endif; ?>
                 <div class="form-fields">
                     <div class="form-field">
                         <label for="dorm-select">Прикрепить к общежитию</label>
@@ -28,7 +28,7 @@
                             <option value="">Нет</option>
                             <?php foreach ($free_dorms as $d): ?>
                                 <option value="<?= $d->dormitory_id ?>"
-                                    <?= ((int)($commandant->dormitory_id ?? 0) === (int)$d->dormitory_id) ? 'selected' : '' ?>>
+                                    <?= ($current_dorm_id ?? 0) === $d->dormitory_id ? 'selected' : '' ?>>
                                     Общежитие №<?= $d->dormitory_number ?>
                                 </option>
                             <?php endforeach; ?>

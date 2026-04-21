@@ -79,10 +79,13 @@ class CommandantController {
             app()->route->redirect('/commandants');
         }
 
+        $current_dorm_id = Dormitory::find_by_commandant($commandant->user_id)?->dormitory_id;
+
         return (new View())->render('site.commandant_form', [
-            'free_dorms' => $free_dorms,
             'commandant' => $commandant,
-            'page_title' => 'Прикрепление к общежитию'
+            'free_dorms' => $free_dorms,
+            'current_dorm_id' => $current_dorm_id, 
+            'page_title' => 'Редактирование коменданта'
         ]);
     }
 }
