@@ -7,20 +7,12 @@ use Validator\AbstractValidator;
 
 class UniqueValidator extends AbstractValidator
 {
+
     protected string $message = 'Field :field must be unique';
 
     public function rule(): bool
     {
-        if (empty($this->args[0]) || empty($this->args[1])) {
-            return true;
-        }
-
-        $query = Capsule::table($this->args[0])->where($this->args[1], $this->value);
-
-        if (isset($this->args[2]) && isset($this->args[3])) {
-            $query->where($this->args[3], '!=', $this->args[2]);
-        }
-
-        return (bool)!$query->count();
+        return (bool)!Capsule::table($this->args[0])
+            ->where($this->args[1], $this->value)->count();
     }
 }

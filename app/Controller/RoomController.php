@@ -7,6 +7,7 @@ use Model\Room;
 use Model\RoomType;
 use Src\Request;
 use Src\View;
+use Validator\Validator;
 
 class RoomController {
     public function rooms(Request $request): string
@@ -38,20 +39,21 @@ class RoomController {
         $types = RoomType::all();
         if ($request->method === 'POST') {
             $validator = new Validator($request->all(), [
-                'room_number' => ['required', 'unique_room:' . $dormitory_id],
-                'floor' => ['required'],
+                'room_number' => ['required', 'unique_room:' . $dormitory_id, 'max_length:10'],
+                'floor' => ['required', 'max_length:10'],
                 'capacity' => ['required', 'is_numeric', 'positive_number'],
                 'type_id' => ['required']
             ], ['required' => 'Поле :field пусто',
                 'unique_room' => 'Комната с таким номером уже существует в общежитии',
                 'is_numeric' => 'Поле :field должно быть числом',
-                'positive_number' => 'Поле :field не должно быть <= 0'],
+                'positive_number' => 'Поле :field не должно быть <= 0',
+                'max_length' => 'Поле :field превышает лимит символов'],
                 app()->settings->app['validators']);
 
             if ($validator->fails()) {
                 return (new View())->render('site.room_form', [
                     'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE),
-                    'room' => null,
+                    'room' => (object) $request->all(),
                     'dormitory_id' => $dormitory_id,
                     'page_title' => 'Добавление комнаты',
                     'types' => $types

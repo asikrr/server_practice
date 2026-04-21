@@ -26,12 +26,13 @@ class CommandantController {
 
         if ($request->method === 'POST') {
             $validator = new Validator($request->all(), [
-                'login' => ['required', 'unique:users,login'],
-                'full_name' => ['required'],
-                'password' => ['required']
+                'login' => ['required', 'unique:users,login', 'max_length:255'],
+                'full_name' => ['required', 'max_length:255'],
+                'password' => ['required', 'max_length:255']
             ], [
                 'required' => 'Поле :field пусто',
-                'unique' => 'Поле :field должно быть уникально'
+                'unique' => 'Поле :field должно быть уникально',
+                'max_length' => 'Поле :field превышает лимит символов'
             ],
                 app()->settings->app['validators']);
 
@@ -39,7 +40,7 @@ class CommandantController {
                 return (new View())->render('site.commandant_form', [
                     'message' => json_encode($validator->errors(), JSON_UNESCAPED_UNICODE),
                     'free_dorms' => $free_dorms,
-                    'commandant' => null,
+                    'commandant' => (object) $request->all(),
                     'page_title' => 'Добавление коменданта'
                 ]);
             }

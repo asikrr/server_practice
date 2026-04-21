@@ -32,12 +32,12 @@ class ResidentController {
 
         if ($request->method === 'POST') {
             $validator = new Validator($request->all(), [
-                'last_name' => ['required'],
-                'first_name' => ['required'],
-                'passport' => ['required', 'passport'],
+                'last_name' => ['required', 'max_length:100'],
+                'first_name' => ['required', 'max_length:100'],
+                'passport' => ['required', 'passport', 'max_length:20'],
                 'gender_id' => ['required'],
                 'status_id' => ['required'],
-                'residence_order_num' => ['required'],
+                'residence_order_num' => ['required', 'max_length:20'],
                 'date_of_entry' => ['required'],
                 'date_of_departure' => ['required', 'date:' . $request->date_of_entry],
                 'receipt_file' => ['max_file_size']
@@ -45,7 +45,8 @@ class ResidentController {
                 'required' => 'Поле :field обязательно',
                 'date' => 'Поле :field не может быть <= дате заезда',
                 'passport' => 'Человек с таким паспортом уже проживает в общежитии',
-                'max_file_size' => 'Размер файла не должен превышать 2МБ'
+                'max_file_size' => 'Размер файла не должен превышать 2МБ',
+                'max_length' => 'Поле :field превышает лимит символов'
             ], app()->settings->app['validators']);
 
             $custom_errors = [];

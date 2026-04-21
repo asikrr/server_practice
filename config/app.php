@@ -15,7 +15,8 @@ return [
         'max_file_size' => Validators\MaxFileSizeValidator::class,
         'date' => Validators\DateValidator::class,
         'unique_room' => Validators\UniqueRoomValidator::class,
-        'passport' => Validators\PassportValidator::class
+        'passport' => Validators\PassportValidator::class,
+        'max_length' => Validators\MaxLengthValidator::class
     ],
     'routeAppMiddleware' => [
         'csrf' => \Middlewares\CSRFMiddleware::class,
