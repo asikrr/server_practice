@@ -49,7 +49,8 @@ class CommandantController {
             $data['role_id'] = 2;
 
             $commandant = User::create($data);
-            Dormitory::assign_dormitory_to_commandant($commandant->user_id, $data['dormitory_id'] ?? null);
+            $dormitory_id = !empty($data['dormitory_id']) ? (int)$data['dormitory_id'] : null;
+            Dormitory::assign_dormitory_to_commandant($commandant->user_id, $dormitory_id);
 
             app()->route->redirect('/commandants');
             return '';
