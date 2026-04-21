@@ -80,7 +80,12 @@
                 <div class="table-column">
                     <p class="bold-text">Загрузка квитанции</p>
                     <?php foreach ($residents ?? [] as $r): ?>
-                        <a href="<?= app()->route->getUrl('/resident_update/' . $r->resident_id) ?>" class="underline-text">Загрузить</a>
+                        <?php $cur = $r->get_current_residence(); ?>
+                        <?php if ($cur && $cur->payment && $cur->payment->receipt_file): ?>
+                            <p>Загружена</p>
+                        <?php else: ?>
+                            <a href="<?= app()->route->getUrl('/resident_update/' . $r->resident_id) ?>" class="underline-text">Загрузить</a>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 </div>
                 <div class="table-column">

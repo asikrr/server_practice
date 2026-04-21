@@ -8,8 +8,10 @@ use Model\Resident;
 use Model\Room;
 use Src\Request;
 use Src\View;
+use Validator\Validator;
 
 class ResidentController {
+
     public function residents(Request $request): string
     {
         $user_id = app()->auth->user()->getId();
@@ -76,14 +78,21 @@ class ResidentController {
             $price = Room::get_dormitory_price($room_id);
             $receipt_path = $this->upload_receipt_file($request->files()['receipt_file'] ?? null);
 
-            $residence = $this->create_residence(
-                $resident->resident_id, $room_id,
-                $request->residence_order_num, $price,
-                $request->date_of_entry, $request->date_of_departure
-            );
+            $residence = Residence::create([
+                'resident_id' => $resident->resident_id,
+                'room_id' => $room_id,
+                'date_of_entry' => $request->date_of_entry,
+                'date_of_departure' => $request->date_of_departure,
+                'residence_order_num' => $request->residence_order_num,
+                'residence_price' => $price
+            ]);
 
             if ($receipt_path) {
-                Payment::create_or_update_for_residence($residence->residence_id, $receipt_path);
+                Payment::create_once($residence->residence_id, [
+                    'date' => date('Y-m-d'),
+                    'amount' => $price,
+                    'receipt_file' => $receipt_path
+                ]);
             }
             app()->route->redirect('/rooms');
         }
@@ -133,10 +142,15 @@ class ResidentController {
                 ]);
             }
 
+            $price = $residence->residence_price;
             $receipt_path = $this->upload_receipt_file($request->files()['receipt_file'] ?? null);
 
-            if ($receipt_path && $residence) {
-                Payment::create_or_update_for_residence($residence->residence_id, $receipt_path);
+            if ($receipt_path) {
+                Payment::create_once($residence->residence_id, [
+                    'date' => date('Y-m-d'),
+                    'amount' => $price,
+                    'receipt_file' => $receipt_path
+                ]);
             }
 
             app()->route->redirect('/residents');
@@ -153,27 +167,18 @@ class ResidentController {
 
     private function upload_receipt_file(?array $file): ?string
     {
-        if (empty($file['tmp_name'])) return null;
+        if (empty($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
+            return null;
+        }
 
         $dir = __DIR__ . '/../../public/uploads/receipts/';
-
         $name = uniqid() . '_' . basename($file['name']);
-        if (move_uploaded_file($file['tmp_name'], $dir . $name)) {
+        $targetPath = $dir . $name;
+
+        if (move_uploaded_file($file['tmp_name'], $targetPath)) {
             $config = require __DIR__ . '/../../config/path.php';
             return '/' . $config['root'] . '/uploads/receipts/' . $name;
         }
         return null;
-    }
-
-    private function create_residence(int $residentId, int $roomId, string $orderNum, float $price, string $entry_date, string $departure_date): Residence
-    {
-        return Residence::create([
-            'resident_id' => $residentId,
-            'room_id' => $roomId,
-            'date_of_entry' => $entry_date,
-            'date_of_departure' => $departure_date,
-            'residence_order_num' => $orderNum,
-            'residence_price' => $price
-        ]);
     }
 }

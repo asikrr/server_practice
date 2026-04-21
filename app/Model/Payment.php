@@ -22,18 +22,17 @@ class Payment extends Model
         return $this->belongsTo(Residence::class, 'residence_id', 'residence_id');
     }
 
-    public static function create_or_update_for_residence(int $residence_id, string $receipt_path): void
+    public static function create_once(int $residence_id, array $data): ?self
     {
-        $residence = Residence::with('room.dormitory')->find($residence_id);
-        if (!$residence) return;
-
-        self::updateOrCreate(
-            ['residence_id' => $residence_id],
-            [
-                'date' => date('Y-m-d'),
-                'amount' => $residence->room->dormitory->price,
-                'receipt_file' => $receipt_path
-            ]
-        );
+        if (self::where('residence_id', $residence_id)->exists()) {
+            return null;
+        }
+        
+        return self::create([
+            'residence_id' => $residence_id,
+            'date' => $data['date'] ?? date('Y-m-d'),
+            'amount' => $data['amount'] ?? 0,
+            'receipt_file' => $data['receipt_file'] ?? null
+        ]);
     }
 }

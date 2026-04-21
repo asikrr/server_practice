@@ -6,6 +6,7 @@ use Model\Dormitory;
 use Model\User;
 use Src\Request;
 use Src\View;
+use Validator\Validator;
 
 class CommandantController {
     public function commandants(Request $request): string
