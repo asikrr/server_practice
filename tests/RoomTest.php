@@ -8,18 +8,10 @@ class RoomTest extends TestCase
 {
     protected function setUp(): void
     {
-        $_SERVER['DOCUMENT_ROOT'] = 'C:/xampp/htdocs';
-        
-        $appConfig = include $_SERVER['DOCUMENT_ROOT'] . '/server_practice/config/app.php';
-        $dbConfig = include $_SERVER['DOCUMENT_ROOT'] . '/server_practice/config/db.php';
-        $pathConfig = include $_SERVER['DOCUMENT_ROOT'] . '/server_practice/config/path.php';
-        
-        $GLOBALS['app'] = new Src\Application(new Src\Settings([
-            'app' => $appConfig,
-            'db' => $dbConfig,
-            'path' => $pathConfig,
-        ]));
-        
+        $_SERVER['DOCUMENT_ROOT'] = 'C:/xampp/htdocs/practice_without_packages';
+        $config = include $_SERVER['DOCUMENT_ROOT'] . '/config/app.php';
+        $GLOBALS['app'] = new \Src\Application($config);
+
         if (!function_exists('app')) {
             function app() {
                 return $GLOBALS['app'];
@@ -37,10 +29,12 @@ class RoomTest extends TestCase
         ]);
 
         $dorm = Dormitory::create([
-            'name' => 'Test Dorm',
-            'address' => 'Test',
+            'dormitory_number' => '12345',
+            'city' => 'Test City',
+            'street' => 'Test Street',
+            'building' => '1',
             'price' => 0,
-            'user_id' => $user->user_id 
+            'user_id' => $user->user_id
         ]);
 
         $room_male_empty = Room::create([
