@@ -40,8 +40,10 @@ class User extends Model implements IdentityInterface
 
     public function attemptIdentity(array $credentials)
     {
-        return self::where(['login' => $credentials['login'],
-            'password' => md5($credentials['password'])])->first();
+        return self::where([
+            'login' => $credentials['login'],
+            'password' => md5($credentials['password'])
+        ])->first();
     }
 
     public static function find_by_id(int $id): ?self
@@ -57,5 +59,25 @@ class User extends Model implements IdentityInterface
     public static function get_commandants_count(): int
     {
         return self::where('role_id', 2)->count();
+    }
+
+    public function createApiToken(): string
+    {
+        $token = bin2hex(random_bytes(32));
+        
+        app()->db->table('api_tokens')->insert([
+            'user_id' => $this->user_id,
+            'token' => $token,
+            'created_at' => date('Y-m-d H:i:s')
+        ]);
+
+        return $token;
+    }
+
+    public function revokeAllTokens(): void
+    {
+        app()->db->table('api_tokens')
+            ->where('user_id', $this->user_id)
+            ->delete();
     }
 }

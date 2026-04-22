@@ -5,7 +5,8 @@ return [
     'routeMiddleware' => [
         'auth' => \Middlewares\AuthMiddleware::class,
         'admin' => \Middlewares\AdminMiddleware::class,
-        'commandant' => \Middlewares\CommandantMiddleware::class
+        'commandant' => \Middlewares\CommandantMiddleware::class,
+        'api_auth' => \Middlewares\ApiAuthMiddleware::class,
     ],
     'validators' => [
         'required' => \Validator\Validators\RequireValidator::class,

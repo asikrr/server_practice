@@ -32,7 +32,7 @@ class RouteProvider extends AbstractProvider
 
     private function getUri(): string
     {
-        return substr($_SERVER['REQUEST_URI'], strlen($this->app->settings->getRootPath()));
+        return substr($_SERVER['REQUEST_URI'] ?? '/', strlen($this->app->settings->getRootPath()));
     }
 
     private function checkPrefix(string $prefix): bool

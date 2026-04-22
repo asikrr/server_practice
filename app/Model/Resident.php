@@ -67,14 +67,17 @@ class Resident extends Model
         ];
     }
 
-    public static function get_debtors(int $commandant_id): array
+    public static function get_debtors(?int $commandant_id = null): array
     {
-        $room_ids_query = Room::whereHas('dormitory', fn($q) => $q->where('user_id', $commandant_id))
-                              ->select('room_id');
+        $roomQuery = Room::whereHas('dormitory', function ($q) use ($commandant_id) {
+            if ($commandant_id > 0) {
+                $q->where('user_id', $commandant_id);
+            }
+        });
 
         return self::with(['residences' => fn($q) => $q->whereNull('actual_date_of_departure')->with(['room', 'payment'])])
             ->whereHas('residences', fn($q) => $q->whereNull('actual_date_of_departure')
-                                                 ->whereIn('room_id', $room_ids_query)) 
+                                                ->whereIn('room_id', $roomQuery->select('room_id'))) 
             ->get()
             ->filter(fn($r) => $r->residences->first() && !$r->residences->first()->payment)
             ->map(fn($r) => [

@@ -6,44 +6,51 @@ use Src\Session;
 
 class Auth
 {
-    private static IdentityInterface $user;
+    private static ?IdentityInterface $resolver = null;
+    private static ?IdentityInterface $authenticatedUser = null;
 
     public static function init(IdentityInterface $user): void
     {
-        self::$user = $user;
-        if (self::user()) {
-            self::login(self::user());
-        }
+        self::$resolver = $user;
     }
 
     public static function login(IdentityInterface $user): void
     {
-        self::$user = $user;
-        Session::set('id', self::$user->getId());
+        self::$authenticatedUser = $user;
+        Session::set('id', $user->getId());
         Session::set('role_id', $user->role_id);
     }
 
     public static function attempt(array $credentials): bool
     {
-        if ($user = self::$user->attemptIdentity($credentials)) {
+        if (self::$resolver && $user = self::$resolver->attemptIdentity($credentials)) {
             self::login($user);
             return true;
         }
         return false;
     }
 
-    public static function user()
+    public static function user(): ?IdentityInterface
     {
+        if (self::$authenticatedUser !== null) {
+            return self::$authenticatedUser;
+        }
+
         $id = Session::get('id') ?? 0;
-        return self::$user->findIdentity($id);
+        if ($id > 0 && self::$resolver) {
+            $found = self::$resolver->findIdentity($id);
+            if ($found) {
+                self::$authenticatedUser = $found;
+                return $found;
+            }
+        }
+
+        return null;
     }
 
     public static function check(): bool
     {
-        if (self::user()) {
-            return true;
-        }
-        return false;
+        return self::user() !== null;
     }
 
     public static function generateCSRF(): string
@@ -57,7 +64,7 @@ class Auth
     {
         Session::clear('id');
         Session::clear('role_id');
+        self::$authenticatedUser = null;
         return true;
     }
-
 }
