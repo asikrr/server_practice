@@ -6,7 +6,7 @@ return [
         'auth' => \Middlewares\AuthMiddleware::class,
         'admin' => \Middlewares\AdminMiddleware::class,
         'commandant' => \Middlewares\CommandantMiddleware::class,
-        'api_auth' => \Middlewares\ApiAuthMiddleware::class,
+        'token' => \Middlewares\TokenMiddleware::class,
     ],
     'validators' => [
         'required' => \Validator\Validators\RequireValidator::class,
